@@ -1,9 +1,9 @@
 from BeautifulSoup import BeautifulStoneSoup
-import sqlite3, requests, time, multiprocessing, boto
+import sqlite3, requests, time, multiprocessing, boto, os
 from settings import AWS_KEY, AWS_SECRET
 from urllib import quote
 
-DATABASE = 'db'
+DATABASE = os.path.abspath(os.path.dirname(__file__)) + '/db'
 
 
 def get_content(URL):
@@ -55,8 +55,6 @@ def run_cycle():
 
     started = time.time()
 
-    #manager = multiprocessing.Manager()
-    #datapoints = manager.list()
     processes = []
     for stop in r:
         p = multiprocessing.Process(target=do_stop, args=(stop,))
@@ -64,9 +62,8 @@ def run_cycle():
         processes.append(p)
 
     for process in processes:
-        process.join()
+        process.join(60)
 
 
 # set this up in cron so that this script runs periodically
-
 run_cycle()
